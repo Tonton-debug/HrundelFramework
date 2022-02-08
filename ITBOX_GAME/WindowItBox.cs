@@ -44,8 +44,13 @@ namespace ITBOX_GAME
 
         private void WindowItBox_Load(object sender, EventArgs e)
         {
-            MapManager.LoadAllMap();
-           MapManager.SetCurrentMap("level_1");
+            MapManager.LoadResourses(@"C:\maps\test.hgr");
+            new Box();
+            new Platform();
+            new Player();
+            
+            MapManager.LoadAllMaps();
+           MapManager.SetCurrentMap("level1");
           
         }
     }

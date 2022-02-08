@@ -7,12 +7,25 @@ using System.Threading.Tasks;
 
 namespace HrundelFramework
 {
-    internal struct Line
+    internal enum Side
+    {
+        Left,
+        Right,
+        Up,
+        Down
+    }
+    internal class Line
     {
        public Vector2 Position { get; private set; }
         public float X { get; private set; }
         public float Y { get; private set; }
         public Line(Vector2 position,Vector2 startPosition)
+        {
+            X = position.X;
+            Y = position.Y;
+            Position = startPosition;
+        }
+        public void UpdatePos(Vector2 position, Vector2 startPosition)
         {
             X = position.X;
             Y = position.Y;
@@ -85,23 +98,74 @@ namespace HrundelFramework
     internal class Collider
     {
         public bool IsVisible { get; set; }
-        public Line UpLine { get;private set; }
+        private bool _hasLine = false;
+        public Line UpLine { get; private set; }
         public Line LeftLine { get; private set; }
         public Line RightLine { get; private set; }
         public Line DownLine { get; private set; }
         public Collider()
         {
-           
+            
         }
-      public void UpdatePosition(Vector2 position, Vector2 size)
+        public bool HasCollision(Side side,Collider otherCollider,Vector2 offset)
         {
-            DownLine = new Line(new Vector2(position.X,position.Y-size.Y*0.5f),position);
-            UpLine = new Line(new Vector2(position.X, position.Y + size.Y * 0.5f), position);
-            LeftLine = new Line(new Vector2((position.X-size.X * 0.5f), position.Y), position);
-            RightLine = new Line(new Vector2(position.X + size.X * 0.5f, position.Y), position);
-          
-          
+            switch (side)
+            {
+                case Side.Left:
+                    return offset.X > 0 && ((UpLine < otherCollider.UpLine && UpLine > otherCollider.DownLine) || (otherCollider.UpLine < UpLine && otherCollider.UpLine > DownLine)) &&
+                        ((RightLine > otherCollider.LeftLine && RightLine < otherCollider.RightLine) || RightLine == otherCollider.LeftLine);
+                case Side.Right:
+                    return offset.X < 0 && ((UpLine < otherCollider.UpLine && UpLine > otherCollider.DownLine) || (otherCollider.UpLine < UpLine && otherCollider.UpLine > DownLine)) &&
+                         ((LeftLine < otherCollider.RightLine && LeftLine > otherCollider.LeftLine) || LeftLine == otherCollider.RightLine);
+                    
+                case Side.Up:
+                    return offset.Y > 0 && ((LeftLine < otherCollider.RightLine && LeftLine > otherCollider.LeftLine) || (otherCollider.LeftLine < RightLine && otherCollider.LeftLine > LeftLine))&&
+                       ((DownLine < otherCollider.UpLine && DownLine > otherCollider.DownLine) || (DownLine == otherCollider.UpLine));
+                case Side.Down:
+                    return offset.Y < 0 && ((LeftLine < otherCollider.RightLine && LeftLine > otherCollider.LeftLine) || (otherCollider.LeftLine < RightLine && otherCollider.LeftLine > LeftLine)) &&
+                      ((UpLine > otherCollider.DownLine && UpLine < otherCollider.UpLine) || (UpLine == otherCollider.DownLine));
+                default:
+                    return false;
+            }
         }
+        public bool HasCollision(Side side, Collider otherCollider)
+        {
+            switch (side)
+            {
+                case Side.Left:
+                    return ((UpLine < otherCollider.UpLine && UpLine > otherCollider.DownLine) || (otherCollider.UpLine < UpLine && otherCollider.UpLine > DownLine)) &&
+                        ((RightLine > otherCollider.LeftLine && RightLine < otherCollider.RightLine) || RightLine == otherCollider.LeftLine);
+                case Side.Right:
+                    return  ((UpLine < otherCollider.UpLine && UpLine > otherCollider.DownLine) || (otherCollider.UpLine < UpLine && otherCollider.UpLine > DownLine)) &&
+                         ((LeftLine < otherCollider.RightLine && LeftLine > otherCollider.LeftLine) || LeftLine == otherCollider.RightLine);
 
+                case Side.Up:
+                    return  ((LeftLine < otherCollider.RightLine && LeftLine > otherCollider.LeftLine) || (otherCollider.LeftLine < RightLine && otherCollider.LeftLine > LeftLine)) &&
+                       ((DownLine < otherCollider.UpLine && DownLine > otherCollider.DownLine) || (DownLine == otherCollider.UpLine));
+                case Side.Down:
+                    return ((LeftLine < otherCollider.RightLine && LeftLine > otherCollider.LeftLine) || (otherCollider.LeftLine < RightLine && otherCollider.LeftLine > LeftLine)) &&
+                      ((UpLine > otherCollider.DownLine && UpLine < otherCollider.UpLine) || (UpLine == otherCollider.DownLine));
+                default:
+                    return false;
+            }
+        }
+        public void UpdatePosition(Vector2 position, Vector2 size)
+        {
+            if (!_hasLine)
+            {
+                DownLine = new Line(new Vector2(position.X, position.Y - size.Y * 0.5f), position);
+                UpLine = new Line(new Vector2(position.X, position.Y + size.Y * 0.5f), position);
+                LeftLine = new Line(new Vector2(position.X - size.X * 0.5f, position.Y), position);
+                RightLine = new Line(new Vector2(position.X + size.X * 0.5f, position.Y), position);
+                _hasLine = true;
+            }
+            else
+            {
+                DownLine.UpdatePos(new Vector2(position.X, position.Y - size.Y * 0.5f), position);
+                UpLine.UpdatePos(new Vector2(position.X, position.Y + size.Y * 0.5f), position);
+                LeftLine.UpdatePos(new Vector2(position.X - size.X * 0.5f, position.Y), position);
+                RightLine.UpdatePos(new Vector2(position.X + size.X * 0.5f, position.Y), position);
+            }
+        }
     }
 }

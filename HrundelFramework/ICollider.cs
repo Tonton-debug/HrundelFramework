@@ -4,8 +4,8 @@ using System.Text;
 
 namespace HrundelFramework
 {
-    interface ICollider
+   public interface ICollider
     {
-       
+        public void CollisionHasOccurred(List<Entity> entities);
     }
 }

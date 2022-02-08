@@ -9,7 +9,7 @@ namespace ITBOX_GAME
          
             using(WindowItBox window=new WindowItBox())
             {
-                window.Run(60, 60);
+                window.Run(30, 30);
             }
             
           

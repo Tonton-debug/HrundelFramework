@@ -9,7 +9,7 @@ using System.IO;
 
 namespace HrundelFramework
 {
-    public abstract class Map
+    public sealed class Map
     {
         public readonly string Name;
         private Camera _mainCamera;
@@ -19,7 +19,7 @@ namespace HrundelFramework
             Name = name;
             _mainCamera = camera;
             MapManager.AddMap(this);
-            EntitiesInitialization();
+          
         }
         public Camera GetCamera()
         {
@@ -29,7 +29,7 @@ namespace HrundelFramework
         {
             return _prefabEntities;
         }
-       protected abstract void EntitiesInitialization();
+      
        public List<T> FindEntityTypeInRadius<T>(Vector2 position,float radius) where T:class
         {
             List<T> typeEntities = new List<T>();
@@ -44,8 +44,17 @@ namespace HrundelFramework
         }
         public void AddEntity(Entity entity,EntityProperties entityProperties)
         {
-            entity.ChangeProperties(entityProperties);
-            _prefabEntities.Add(entity);
+            foreach (var item in Assembly.Load("ITBOX_GAME").GetTypes())
+            {
+                object[] paramArray=new object[0];
+                object obj = Activator.CreateInstance(item,args:paramArray);
+                if (obj is Entity&&(obj as Entity).Name== entity.Name)
+                {
+                    (obj as Entity).ChangeProperties(entityProperties);
+                    _prefabEntities.Add(obj as Entity);
+                    break;
+                }
+            }
         }
         public void RemoveEntity(Entity entity)
         {
@@ -58,6 +67,7 @@ namespace HrundelFramework
                 entity.Rendering(_mainCamera.GetOrthoMatrix());
                
             }
+   
         }
     }
 }

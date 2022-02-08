@@ -8,15 +8,12 @@ using OpenTK.Graphics.OpenGL;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
-
+using ResourseLibrary;
 namespace HrundelFramework
 {
     public struct ColorF
     {
-        //private float _r;
-        //private float _g;
-        //private float _b;
-        //private float _a;
+      
         public float R;
         public float G;
         public float B;
@@ -36,13 +33,11 @@ namespace HrundelFramework
         public readonly Vector2 Position;
         public readonly Vector2 Scale;
         public readonly string Name;
-        public readonly ColorF Color;
-        public EntityProperties(Vector2 position,Vector2 scale,string name, ColorF color)
+        public EntityProperties(Vector2 position,Vector2 scale,string name)
         {
             Position = position;
             Name = name;
             Scale = scale;
-            Color = color;
         }
     }
  public  abstract class Entity
@@ -71,16 +66,25 @@ namespace HrundelFramework
         public string Name { get; private set; }
         protected Map MyMap { get; private set; }
 
-        public Entity()
+        public Entity(string descriptionEntityName)
         {
-            Name = DateTime.Now.ToBinary().ToString();
+          
+          DescriptionEntity descriptionEntity= MapManager.LoadedResourse.DescriptionEntities[descriptionEntityName];
+            Name = descriptionEntity.Name;
+            Color = new ColorF(descriptionEntity.MyColor.R, descriptionEntity.MyColor.G, descriptionEntity.MyColor.B, descriptionEntity.MyColor.A);
+            MapManager.AddEntity(this);
         }
+       public Entity()
+        {
+
+        }
+        
         internal void ChangeProperties(EntityProperties entityProperties)
         {
             Position = entityProperties.Position;
             Scale = entityProperties.Scale;
             Name = entityProperties.Name;
-            Color = entityProperties.Color;
+          
         }
 
        
@@ -109,11 +113,9 @@ namespace HrundelFramework
         {
                 LateUpdate();
             _myShader.CreateProgram();
-            _vertexBufferObject = GL.GenBuffer();
-            _elementBufferObject = GL.GenBuffer();
-            _vertexArrayObject = GL.GenVertexArray();
-            GL.BindBuffer(BufferTarget.ArrayBuffer, _vertexBufferObject);
-            GL.BindVertexArray(_vertexArrayObject);
+            GL.Enable(EnableCap.Blend);
+         
+            GL.BindVertexArray(_vertexBufferObject);
             GL.BufferData(BufferTarget.ArrayBuffer, GetVertices().Length * sizeof(float), GetVertices(), BufferUsageHint.StaticDraw);
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, _elementBufferObject);
             GL.BufferData(BufferTarget.ElementArrayBuffer, _indices.Length * sizeof(uint), _indices, BufferUsageHint.StaticDraw);
@@ -121,7 +123,7 @@ namespace HrundelFramework
             GL.EnableVertexAttribArray(0);
             _myShader.Use();
             int id = _myShader.GetUniform("ourColor");
-            GL.Uniform4(id,_color.R, _color.G, _color.B, _color.B);
+            GL.Uniform4(id,_color.R, _color.G, _color.B, _color.A);
             _myShader.SetUniform4(orthoMatrix,"ortho");
             Matrix4 transform = Matrix4.CreateScale(_scale.X, _scale.Y, 0) * Matrix4.CreateRotationZ(MathHelper.DegreesToRadians(_rotate)) * Matrix4.CreateTranslation(new Vector3(_position.X, _position.Y, 0))*orthoMatrix;
             _myShader.SetUniform4(transform, "transform");
@@ -140,6 +142,10 @@ namespace HrundelFramework
         public virtual void Load()
         {
             GenBuffersAndGetShader();
+            _vertexBufferObject = GL.GenBuffer();
+            _elementBufferObject = GL.GenBuffer();
+            _vertexArrayObject = GL.GenVertexArray();
+            GL.BindBuffer(BufferTarget.ArrayBuffer, _vertexBufferObject);
         }
         internal void Load(Map map)
         {

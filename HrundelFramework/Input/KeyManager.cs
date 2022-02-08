@@ -116,9 +116,9 @@ namespace HrundelFramework.Input
         [DllImportAttribute("user32.dll",SetLastError =true)]
         private static extern ushort GetKeyboardLayout([In] int idThread);
         [DllImportAttribute("user32.dll")]
-        public static extern UInt32 GetWindowThreadProcessId(IntPtr hwnd, ref Int32 pid);
+        private static extern UInt32 GetWindowThreadProcessId(IntPtr hwnd, ref Int32 pid);
         [DllImportAttribute("user32.dll")]
-        public static extern UInt32 GetWindowThreadProcessId([In] IntPtr hwnd, [Out,Optional] IntPtr ipdwProcessId);
+        private static extern UInt32 GetWindowThreadProcessId([In] IntPtr hwnd, [Out,Optional] IntPtr ipdwProcessId);
         public static bool KeyPressed(Key key)
         {
             int v = GetAsyncKeyState((int)key);

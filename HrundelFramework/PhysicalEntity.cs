@@ -14,32 +14,25 @@ namespace HrundelFramework
         {
             _impulseVector = imulse;
         }
+        public PhysicalEntity(string descriptionEntityName) : base(descriptionEntityName)
+        {
+
+        }
+        public PhysicalEntity()
+        {
+
+        }
         public override void LateUpdate()
         {  
             if(_impulseVector.Y==0)
             Position -= new Vector2(0, Gravity);
             if (_impulseVector != Vector2.Zero)
             {
-                Console.WriteLine("{0},{1}", _impulseVector.X, _impulseVector.Y);
-                Position += _impulseVector;
+             
+                  Position += _impulseVector;
                 _impulseVector -=new Vector2(0.1f, 0.1f);
-                switch (PositionCollision)
-                {
-                    case PositionCollision.None:
-                        break;
-                    case PositionCollision.Left:
-                    case PositionCollision.Right:
-                        _impulseVector.X = 0;
-                        break;
-                    case PositionCollision.Up when _impulseVector.Y > 0:
-                        _impulseVector.Y = 0;
-                        break;
-                    case PositionCollision.Down when _impulseVector.Y < 0:
-                        _impulseVector.Y = 0;
-                        break;
-                    default:
-                        break;
-                }
+                if (IsCollision)
+                    _impulseVector = Vector2.Zero;
                
                 _impulseVector.X = _impulseVector.X < 0 ? 0 : _impulseVector.X;
                 _impulseVector.Y = _impulseVector.Y < 0 ? 0 : _impulseVector.Y;

@@ -1,0 +1,123 @@
+﻿<Window x:Class="MapEditor.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MapEditor"
+        xmlns:opentk="clr-namespace:OpenTK;assembly=OpenTK.GLControl"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800" ResizeMode="NoResize">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="25*"/>
+            <RowDefinition Height="87*"/>
+            <RowDefinition Height="322*"/>
+        </Grid.RowDefinitions>
+        <Menu Grid.Row="0">
+            <MenuItem Header="Файл">
+                <Button Content="Сохранить" x:Name="SaveFileButton" Click="SaveFileButton_Click"/>
+                <Button Content="Экпортировать" x:Name="ExportFileButton" Click="ExportFileButton_Click"/>
+                <Button Content="Открыть" x:Name="LoadFileButton" Click="LoadFileButton_Click"/>
+            </MenuItem>
+        </Menu>
+        <StackPanel Grid.Row="1">
+            <TextBlock Text="Карты:"/>
+            <ScrollViewer Height="40">
+                <WrapPanel Name="MapsWrapPanel">
+
+                </WrapPanel>
+            </ScrollViewer>
+            <StackPanel Orientation="Horizontal">
+                <Button Content="Создать карту" Name="CreateMapButton" Click="CreateMapButton_Click"/>
+                <Button Content="Удалить карту" Name="DeleteMapButton" Click="DeleteMapButton_Click"/>
+            </StackPanel>
+        </StackPanel>
+
+        <TabControl x:Name="MainTabControl" Grid.Row="2" SelectionChanged="MainTabControl_SelectionChanged">
+            <TabItem Header="Карта">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="130*"/>
+                        <ColumnDefinition Width="570*"/>
+                        <ColumnDefinition Width="130*"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Orientation="Vertical" Grid.Column="0">
+                        <TextBlock Text="Префабы:"/>
+                        <ScrollViewer Height="222">
+                            <StackPanel x:Name="PrefabsStackPanel">
+                                
+                            </StackPanel>
+                        </ScrollViewer>
+                       
+                        <Button Content="Добавить префаб" Name="AddPrefabButton" Click="AddPrefabButton_Click"/>
+                        <Button Content="Удалить префаб" Name="DeletePrefabButton" Click="DeletePrefabButton_Click"/>
+                    </StackPanel>
+                    <WindowsFormsHost Name = "SceneWindowsFormsHost" Grid.Column="1" Initialized="SceneWindowsFormsHost_Initialized" Visibility="Hidden">
+                        <opentk:GLControl x:Name="SceneGLControl" Load="SceneGLControl_Load" Paint="SceneGLControl_Paint"/>
+                    </WindowsFormsHost>
+                    <StackPanel Orientation="Vertical" Grid.Column="2">
+                        <TextBlock Text="Префаб:"/>
+                        <TextBlock x:Name="NamePrefTextBlock"/>
+                        <TextBlock Text="Позиция:"/>
+                        <WrapPanel>
+                            <TextBlock Text="X:"/>
+                            <TextBox x:Name="XPositionOrdinateTextBox" MinWidth="20"/>
+                            <TextBlock Text="Y:"/>
+                            <TextBox Name="YPositionOrdinateTextBox" MinWidth="20"/>
+                        </WrapPanel>
+                        <TextBlock Margin="0,10,0,0" Text="Размер:"/>
+                        <WrapPanel>
+                            <TextBlock  Text="X:"/>
+                            <TextBox  Name="XScaleOrdinateTextBox" MinWidth="20"/>
+                            <TextBlock  Text="Y:"/>
+                            <TextBox Name="YScaleOrdinateTextBox" MinWidth="20"/>
+                        </WrapPanel>
+                        <Button Content="Сохранить изменения" Name="SavePrefSettings" Click="SavePrefSettings_Click"/>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Сущности">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="265*"/>
+                        <ColumnDefinition Width="300*"/>
+                        <ColumnDefinition Width="229*"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Orientation="Vertical" Grid.Column="0">
+                        <TextBlock Text="Сущности:"/>
+                        <ScrollViewer Height="200">
+                            <ListBox x:Name="EntitiesListBox">
+                            </ListBox>
+                        </ScrollViewer>
+                        <StackPanel>
+                            <Button Content="Создать сущность" Name="CreateEntityButton" Click="CreateEntityButton_Click"/>
+                            <Button Content="Удалить сущность" Name="DeleteEntityButton" Click="DeleteEntityButton_Click"/>
+                        </StackPanel>
+                    </StackPanel>
+                    <WindowsFormsHost Name="WindowsFormsHostEntity" Grid.Column="1" Initialized="WindowsFormsHostEntity_Initialized" Width="290" Height="290">
+                        <opentk:GLControl x:Name="EntityGLControl" Load="EntityGLControl_Load" Paint="EntityGLControl_Paint"/>
+                    </WindowsFormsHost>
+                    <StackPanel Orientation="Vertical" Grid.Column="2">
+                        <TextBlock Text="Сущность:"/>
+                        <TextBlock  x:Name="NameEntityTextBox"/>
+                        <TextBlock Text="Цвет сущности:"/>
+                        <WrapPanel>
+                            <TextBlock Text="R:"/>
+                            <TextBox x:Name="RColor" MinWidth="20"/>
+                            <TextBlock Text="G:"/>
+                            <TextBox x:Name="GColor" MinWidth="20"/>
+                            <TextBlock Text="B:"/>
+                            <TextBox x:Name="BColor" MinWidth="20"/>
+                        </WrapPanel>
+                        <TextBlock Text="Тип сущности:"/>
+                        <ComboBox Name="EntityTypeComboBox">
+
+                        </ComboBox>
+
+                        <Button Content="Сохранить изменения" Name="SaveEntitySettingsButton" Click="SaveEntitySettingsButton_Click"/>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>
